@@ -70,6 +70,16 @@ const Sellers = () => {
            });
     };
 
+       const updateSeller = seller =>{
+           const updatedSeller = {
+              ...seller,
+              name: seller.name + " UPDATED",
+        } 
+        setSellers(
+          sellers.map((s) => (s.id === seller.id ? updatedSeller : s))
+        );
+    };
+
   return (
     <>
        <h3>Admin Sellers Page</h3> 
@@ -83,6 +93,7 @@ const Sellers = () => {
              {sellers.map((seller) => (
                             <tr key={seller.id}> 
                                  <td>{seller.name} </td> 
+                                 <td><button onClick={() => updateSeller(seller)}>Update</button> </td>
                                  <td><button onClick={() => deleteSeller(seller.id)}>Delete</button> </td>
                            </tr>
                ))}
