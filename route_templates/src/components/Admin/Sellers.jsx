@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import axios from 'axios'
+import apiClient from '../../utils/api-client';
 import Loader from '../Common/Loader';
 
 const Sellers = () => {
@@ -19,7 +19,7 @@ const Sellers = () => {
        fetchSellers();
       /*
                          setIsLoading(true)
-                         axios.get("https://jsonplaceholder.typicode.com/users")
+                         apiClient.get("https://jsonplaceholder.typicode.com/users")
                               .then((res) => {
                                                 setSellers(res.data)
                                                 setIsLoading(false)
@@ -35,7 +35,7 @@ const Sellers = () => {
   const fetchSellers = async () =>{
       setIsLoading(true)
       try {
-             const res = await axios.get("https://jsonplaceholder.typicode.com/users");
+             const res = await apiClient.get("/users");
              setSellers(res.data);
              setIsLoading(false);
           } catch (err) {
@@ -53,7 +53,7 @@ const Sellers = () => {
         id: sellers.length + 1,
       }
       setSellers([newSeller, ...sellers]);
-      axios.post("https://jsonplaceholder.typicode.com/users", newSeller)
+      apiClient.post("/users", newSeller)
            .then((res) => setSellers([res.data, ...sellers]))
            .catch((err) =>{
                setErrors(err.message);
@@ -63,7 +63,7 @@ const Sellers = () => {
 
     const deleteSeller = (id) =>{
       setSellers(sellers.filter((s) => s.id !== id));
-      axios.delete(`https://jsonplaceholder.typicode.com/users/${id}`)
+      apiClient.delete(`/users/${id}`)
            .catch((err) => {
                setErrors(err.message);
                setSellers(sellers);
@@ -78,6 +78,12 @@ const Sellers = () => {
         setSellers(
           sellers.map((s) => (s.id === seller.id ? updatedSeller : s))
         );
+
+        apiClient.patch(`/users/${seller.id}`,
+          updateSeller).catch((err) => {
+             setErrors(err.message);
+             setSellers(sellers);
+          });
     };
 
   return (
