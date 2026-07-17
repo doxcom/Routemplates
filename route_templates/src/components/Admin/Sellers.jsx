@@ -35,7 +35,7 @@ const Sellers = () => {
   const fetchSellers = async () =>{
       setIsLoading(true)
       try {
-             const res = await axios.get("https://jsonplaceholder.typicode.com/userss");
+             const res = await axios.get("https://jsonplaceholder.typicode.com/users");
              setSellers(res.data);
              setIsLoading(false);
           } catch (err) {
@@ -45,17 +45,49 @@ const Sellers = () => {
       
   }
 
-  // if(isLoading) return <h3>Loading...</h3>;                    
+  // if(isLoading) return <h3>Loading...</h3>;      
+  
+    const addSeller = () => {
+      const newSeller ={
+        name,
+        id: sellers.length + 1,
+      }
+      setSellers([newSeller, ...sellers]);
+      axios.post("https://jsonplaceholder.typicode.com/users", newSeller)
+           .then((res) => setSellers([res.data, ...sellers]))
+           .catch((err) =>{
+               setErrors(err.message);
+               setSellers(sellers);
+           });
+    };
+
+    const deleteSeller = (id) =>{
+      setSellers(sellers.filter((s) => s.id !== id));
+      axios.delete(`https://jsonplaceholder.typicode.com/users/${id}`)
+           .catch((err) => {
+               setErrors(err.message);
+               setSellers(sellers);
+           });
+    };
 
   return (
     <>
        <h3>Admin Sellers Page</h3> 
        <input type='text' onChange={(e) => setName(e.target.value)} />
+       <button onClick={addSeller}>Add Seller</button>
        {isLoading && <Loader/>}
        {errors && <em>{errors}</em>}
-       {sellers.map((seller) => (
-          <p key={seller.id}>{seller.name}</p>
-          ))}
+
+       <table>
+          <tbody>
+             {sellers.map((seller) => (
+                            <tr key={seller.id}> 
+                                 <td>{seller.name} </td> 
+                                 <td><button onClick={() => deleteSeller(seller.id)}>Delete</button> </td>
+                           </tr>
+               ))}
+          </tbody>
+       </table> 
        </>
      )
 }
